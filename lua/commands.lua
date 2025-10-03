@@ -22,6 +22,15 @@ function M.open_notes()
 	end
 
 	vim.cmd("edit " .. path)
+
+	vim.bo.swapfile = false
+
+	-- auto reload if changed externally
+	vim.o.autoread = true
+	vim.api.nvim_create_autocmd({ "BufEnter", "FocusGained" }, {
+		buffer = 0,
+		command = "checktime",
+	})
 end
 
 function M.register()
