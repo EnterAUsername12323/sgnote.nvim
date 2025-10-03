@@ -1,19 +1,23 @@
 local M = {}
 
-local home = vim.env.HOME
-
+-- Default options
 M.opts = {
-	path = vim.fn.expand(home .. "/notes.md"),
+	path = vim.fn.expand(vim.env.HOME .. "/notes.md"),
 }
 
--- Path to your global notes file
-local notes_file = vim.fn.expand(home .. "/notes.md")
-
 local function file_exists(path)
+	local f = io.open(path, "r")
+	if f then
+		f:close()
+		return true
+	end
+	return false
+end
+
+function M.open_notes()
 	local path = M.opts.path
 
 	if not file_exists(path) then
-		-- Create the file
 		local f = io.open(path, "w")
 		if f then
 			f:close()
@@ -24,9 +28,9 @@ local function file_exists(path)
 	vim.cmd("edit " .. path)
 end
 
--- Setup function to create command
-function M.setup()
+function M.setup(opts)
 	M.opts = vim.tbl_extend("force", M.opts, opts or {})
+
 	vim.api.nvim_create_user_command("Notes", function()
 		M.open_notes()
 	end, {})
